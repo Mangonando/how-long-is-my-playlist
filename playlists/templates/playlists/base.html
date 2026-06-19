@@ -1,0 +1,28 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}How Long Is My Playlist?{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'playlists/styles.css' %}">
+</head>
+<body>
+    <header class="site-header">
+        <nav class="navbar">
+            <a class="logo" href="{% url 'calculator' %}">How Long Is My Playlist?</a>
+
+            <div class="nav-actions">
+                <a class="nav-link" href="{% url 'calculator' %}">Calculator</a>
+                <a class="button button-secondary" href="#">Login with Spotify</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="page">
+        {% block content %}
+        {% endblock %}
+    </main>
+</body>
+</html>

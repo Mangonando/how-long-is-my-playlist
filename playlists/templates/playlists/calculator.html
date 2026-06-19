@@ -1,36 +1,84 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <title>How Long Is My Playlist?</title>
-</head>
-<body>
-    <h1>How Long Is My Playlist?</h1>
-    <p>Calculate the real duration of your playlist with crossfade.</p>
-    <form method="post">
+{% extends "playlists/base.html" %}
+
+{% block title %}Calculator | How Long Is My Playlist?{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div class="hero-content">
+        <p class="eyebrow">Playlist duration calculator</p>
+
+        <h1>How long is my playlist really?</h1>
+
+        <p class="hero-text">
+            Calculate the real duration of your playlist after crossfade is applied.
+            Perfect for DJ sets, cycling classes, workouts, and timed sessions.
+        </p>
+    </div>
+</section>
+
+<section class="calculator-card">
+    <h2>Manual calculator</h2>
+
+    <form method="post" class="calculator-form">
         {% csrf_token %}
-        <div>
-            <label for="hours">Hours</label>
-            <input type="number" id="hours" name="hours" min="0" value="0">
+
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="hours">Hours</label>
+                <input type="number" id="hours" name="hours" min="0" value="{{ form_data.hours }}">
+            </div>
+
+            <div class="form-group">
+                <label for="minutes">Minutes</label>
+                <input type="number" id="minutes" name="minutes" min="0" value="{{ form_data.minutes }}">
+            </div>
+
+            <div class="form-group">
+                <label for="seconds">Seconds</label>
+                <input type="number" id="seconds" name="seconds" min="0" value="{{ form_data.seconds }}">
+            </div>
+
+            <div class="form-group">
+                <label for="song_count">Number of songs</label>
+                <input type="number" id="song_count" name="song_count" min="1" value="{{ form_data.song_count }}">
+            </div>
+
+            <div class="form-group crossfade-group">
+                <div class="crossfade-label">
+                    <label for="crossfade_seconds">Crossfade</label>
+                    <span class="crossfade-value" id="crossfade_display">{{ form_data.crossfade_seconds }}s</span>
+                </div>
+                <input type="range" id="crossfade_seconds" name="crossfade_seconds" min="1" max="12" value="{{ form_data.crossfade_seconds }}">
+                <div class="crossfade-ticks">
+                    <span>1s</span>
+                    <span>12s</span>
+                </div>
+            </div>
         </div>
-        <div>
-            <label for="minutes">Minutes</label>
-            <input type="number" id="minutes" name="minutes" min="0" value="0">
-        </div>
-        <div>
-            <label for="seconds">Seconds</label>
-            <input type="number" id="seconds" name="seconds" min="0" value="0">
-        </div>
-        <div>
-            <label for="song_count">Number of songs</label>
-            <input type="number" id="song_count" name="song_count" min="1" value="1">
-        </div>
-        <div>
-            <label for="crossfade_seconds">Crossfade seconds</label>
-            <input type="number" id="crossfade_seconds" name="crossfade_seconds" min="0" value="0">
-        </div>
-        <button type="submit">Calculate</button>
+
+        <button type="submit" class="button button-primary">Calculate duration</button>
+    </form>
+
     {% if result %}
-        <p>Real duration: {{ result }}</p>
+        <div class="result-card">
+            <p>Adjusted playlist duration</p>
+            <strong>{{ result }}</strong>
+        </div>
     {% endif %}
-</body>
-</html>
+</section>
+
+<script>
+    const slider = document.getElementById('crossfade_seconds');
+    const display = document.getElementById('crossfade_display');
+
+    function updateSlider() {
+        const val = slider.value;
+        const progress = ((val - slider.min) / (slider.max - slider.min)) * 100;
+        slider.style.setProperty('--progress', progress + '%');
+        display.textContent = val + 's';
+    }
+
+    slider.addEventListener('input', updateSlider);
+    updateSlider();
+</script>
+{% endblock %}
