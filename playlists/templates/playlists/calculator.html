@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>How Long Is My Playlist?</title>
+</head>
+<body>
+    <h1>How Long Is My Playlist?</h1>
+    <p>Calculate the real duration of your playlist with crossfade.</p>
+    <form method="post">
+        {% csrf_token %}
+        <div>
+            <label for="hours">Hours</label>
+            <input type="number" id="hours" name="hours" min="0" value="0">
+        </div>
+        <div>
+            <label for="minutes">Minutes</label>
+            <input type="number" id="minutes" name="minutes" min="0" value="0">
+        </div>
+        <div>
+            <label for="seconds">Seconds</label>
+            <input type="number" id="seconds" name="seconds" min="0" value="0">
+        </div>
+        <div>
+            <label for="song_count">Number of songs</label>
+            <input type="number" id="song_count" name="song_count" min="1" value="1">
+        </div>
+        <div>
+            <label for="crossfade_seconds">Crossfade seconds</label>
+            <input type="number" id="crossfade_seconds" name="crossfade_seconds" min="0" value="0">
+        </div>
+        <button type="submit">Calculate</button>
+    {% if result %}
+        <p>Real duration: {{ result }}</p>
+    {% endif %}
+</body>
+</html>
