@@ -11,20 +11,20 @@ def calculator(request):
     result = None
 
     form_data = {
-        "hours": 0,
-        "minutes": 0,
-        "seconds": 0,
-        "song_count": 1,
-        "crossfade_seconds": 0,
+        "hours": "",
+        "minutes": "",
+        "seconds": "",
+        "song_count": "",
+        "crossfade_seconds": 12,
     }
 
     if request.method == "POST":
         form_data = {
-            "hours": int(request.POST.get("hours", 0)),
-            "minutes": int(request.POST.get("minutes", 0)),
-            "seconds": int(request.POST.get("seconds", 0)),
-            "song_count": int(request.POST.get("song_count", 1)),
-            "crossfade_seconds": int(request.POST.get("crossfade_seconds", 0)),
+            "hours": int(request.POST.get("hours", "") or 0),
+            "minutes": int(request.POST.get("minutes", "") or 0),
+            "seconds": int(request.POST.get("seconds", "") or 0),
+            "song_count": int(request.POST.get("song_count", "") or 1),
+            "crossfade_seconds": int(request.POST.get("crossfade_seconds", 1)),
         }
 
         total_seconds = calculate_total_seconds(

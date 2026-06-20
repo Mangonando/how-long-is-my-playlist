@@ -5,42 +5,33 @@
 {% block content %}
 <section class="hero">
     <div class="hero-content">
-        <p class="eyebrow">Playlist duration calculator</p>
-
         <h1>How long is my playlist really?</h1>
 
         <p class="hero-text">
             Calculate the real duration of your playlist after crossfade is applied.
-            Perfect for DJ sets, cycling classes, workouts, and timed sessions.
         </p>
     </div>
 </section>
 
 <section class="calculator-card">
-    <h2>Manual calculator</h2>
-
     <form method="post" class="calculator-form">
         {% csrf_token %}
 
         <div class="form-grid">
             <div class="form-group">
-                <label for="hours">Hours</label>
-                <input type="number" id="hours" name="hours" min="0" value="{{ form_data.hours }}">
+                <input type="number" id="hours" name="hours" min="0" placeholder="Hours" value="{{ form_data.hours|default:'' }}">
             </div>
 
             <div class="form-group">
-                <label for="minutes">Minutes</label>
-                <input type="number" id="minutes" name="minutes" min="0" value="{{ form_data.minutes }}">
+                <input type="number" id="minutes" name="minutes" min="0" placeholder="Minutes *" value="{{ form_data.minutes|default:'' }}" required>
             </div>
 
             <div class="form-group">
-                <label for="seconds">Seconds</label>
-                <input type="number" id="seconds" name="seconds" min="0" value="{{ form_data.seconds }}">
+                <input type="number" id="seconds" name="seconds" min="0" placeholder="Seconds *" value="{{ form_data.seconds|default:'' }}" required>
             </div>
 
             <div class="form-group">
-                <label for="song_count">Number of songs</label>
-                <input type="number" id="song_count" name="song_count" min="1" value="{{ form_data.song_count }}">
+                <input type="number" id="song_count" name="song_count" min="1" placeholder="Number of songs *" value="{{ form_data.song_count|default:'' }}" required>
             </div>
 
             <div class="form-group crossfade-group">
@@ -80,5 +71,14 @@
 
     slider.addEventListener('input', updateSlider);
     updateSlider();
+
+    const allowedKeys = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'];
+    document.querySelectorAll('input[type="number"]').forEach(input => {
+        input.addEventListener('keydown', function(e) {
+            if (!allowedKeys.includes(e.key) && !/^[0-9]$/.test(e.key)) {
+                e.preventDefault();
+            }
+        });
+    });
 </script>
 {% endblock %}
