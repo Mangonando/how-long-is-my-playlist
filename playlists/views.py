@@ -1,47 +1,8 @@
-from django.shortcuts import render
-
-from project import (
-    calculate_total_seconds,
-    calculate_adjusted_duration,
-    format_duration,
-)
+from django.shortcuts import redirect, render
 
 
 def calculator(request):
-    result = None
-
-    form_data = {
-        "hours": "",
-        "minutes": "",
-        "seconds": "",
-        "song_count": "",
-        "crossfade_seconds": 12,
-    }
-
     if request.method == "POST":
-        form_data = {
-            "hours": int(request.POST.get("hours", "") or 0),
-            "minutes": int(request.POST.get("minutes", "") or 0),
-            "seconds": int(request.POST.get("seconds", "") or 0),
-            "song_count": int(request.POST.get("song_count", "") or 1),
-            "crossfade_seconds": int(request.POST.get("crossfade_seconds", 1)),
-        }
+        return redirect("calculator")
 
-        total_seconds = calculate_total_seconds(
-            form_data["hours"],
-            form_data["minutes"],
-            form_data["seconds"],
-        )
-
-        adjusted_seconds = calculate_adjusted_duration(
-            total_seconds,
-            form_data["song_count"],
-            form_data["crossfade_seconds"],
-        )
-
-        result = format_duration(adjusted_seconds)
-
-    return render(request, "playlists/calculator.html", {
-        "result": result,
-        "form_data": form_data,
-    })
+    return render(request, "playlists/calculator.html")

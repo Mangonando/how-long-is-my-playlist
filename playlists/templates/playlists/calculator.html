@@ -1,6 +1,6 @@
 {% extends "playlists/base.html" %}
 
-{% block title %}Calculator | How Long Is My Playlist?{% endblock %}
+{% block title %}How Long Is My Playlist?{% endblock %}
 
 {% block content %}
 <section class="hero">
@@ -19,46 +19,35 @@
 
         <div class="form-grid">
             <div class="form-group">
-                <input type="number" id="hours" name="hours" min="0" placeholder="Hours" value="{{ form_data.hours|default:'' }}">
+                <input type="number" id="hours" name="hours" min="0" placeholder="Hours">
             </div>
 
             <div class="form-group">
-                <input type="number" id="minutes" name="minutes" min="0" placeholder="Minutes *" value="{{ form_data.minutes|default:'' }}" required>
+                <input type="number" id="minutes" name="minutes" min="0" placeholder="Minutes *" required>
             </div>
 
             <div class="form-group">
-                <input type="number" id="seconds" name="seconds" min="0" placeholder="Seconds *" value="{{ form_data.seconds|default:'' }}" required>
+                <input type="number" id="seconds" name="seconds" min="0" placeholder="Seconds *" required>
             </div>
 
             <div class="form-group">
-                <input type="number" id="song_count" name="song_count" min="1" placeholder="Number of songs *" value="{{ form_data.song_count|default:'' }}" required>
+                <input type="number" id="song_count" name="song_count" min="1" placeholder="Number of songs *" required>
             </div>
 
             <div class="form-group crossfade-group">
-                <div class="crossfade-label">
-                    <label for="crossfade_seconds">Crossfade</label>
-                    <span class="crossfade-value" id="crossfade_display">{{ form_data.crossfade_seconds }}s</span>
-                </div>
-                <input type="range" id="crossfade_seconds" name="crossfade_seconds" min="1" max="12" value="{{ form_data.crossfade_seconds }}">
-                <div class="crossfade-ticks">
-                    <span>1s</span>
-                    <span>12s</span>
-                </div>
+                <label for="crossfade_seconds">Crossfade</label>
+                <input type="range" id="crossfade_seconds" name="crossfade_seconds" min="1" max="12" value="12">
+                <span class="crossfade-value" id="crossfade_display">12s</span>
             </div>
         </div>
 
         <button type="submit" class="button button-primary">Calculate duration</button>
     </form>
 
-    {% if result %}
-        <div class="result-card">
-            <p>Adjusted playlist duration</p>
-            <strong>{{ result }}</strong>
-        </div>
-    {% endif %}
 </section>
 
 <script>
+    // Slider
     const slider = document.getElementById('crossfade_seconds');
     const display = document.getElementById('crossfade_display');
 
@@ -70,6 +59,7 @@
     }
 
     slider.addEventListener('input', updateSlider);
+
     updateSlider();
 
     const allowedKeys = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'];
@@ -79,6 +69,80 @@
                 e.preventDefault();
             }
         });
+    });
+
+    const fieldRules = {
+        hours:      { maxDigits: 3, max: null },
+        minutes:    { maxDigits: 2, max: 59 },
+        seconds:    { maxDigits: 2, max: 59 },
+        song_count: { maxDigits: null, max: null },
+    };
+
+    Object.entries(fieldRules).forEach(([id, rules]) => {
+        const el = document.getElementById(id);
+        el.addEventListener('input', function() {
+            let val = this.value.replace(/\D/g, '');
+            if (rules.maxDigits && val.length > rules.maxDigits) {
+                val = val.slice(0, rules.maxDigits);
+            }
+            if (rules.max !== null && parseInt(val) > rules.max) {
+                val = String(rules.max);
+            }
+            this.value = val;
+        });
+    });
+
+    // Calculation (mirrors project.py logic)
+    function calculateTotalSeconds(hours, minutes, seconds) {
+        return hours * 3600 + minutes * 60 + seconds;
+    }
+
+    function calculateAdjustedDuration(totalSeconds, songCount, crossfadeSeconds) {
+        const loss = songCount <= 1 ? 0 : (songCount - 1) * crossfadeSeconds;
+        return Math.max(0, totalSeconds - loss);
+    }
+
+    function formatDuration(totalSeconds) {
+        const hours = Math.floor(totalSeconds / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = totalSeconds % 60;
+        const mm = String(minutes).padStart(2, '0');
+        const ss = String(seconds).padStart(2, '0');
+        return hours > 0 ? `${hours}:${mm}:${ss}` : `${minutes}:${ss}`;
+    }
+
+    const form = document.querySelector('.calculator-form');
+
+    function calculate() {
+        const hours = parseInt(document.getElementById('hours').value) || 0;
+        const minutes = parseInt(document.getElementById('minutes').value) || 0;
+        const seconds = parseInt(document.getElementById('seconds').value) || 0;
+        const songCount = parseInt(document.getElementById('song_count').value) || 1;
+        const crossfade = parseInt(slider.value);
+
+        const total = calculateTotalSeconds(hours, minutes, seconds);
+        const adjusted = calculateAdjustedDuration(total, songCount, crossfade);
+        const formatted = formatDuration(adjusted);
+
+        let card = document.querySelector('.result-card');
+        if (!card) {
+            card = document.createElement('div');
+            card.className = 'result-card';
+            card.innerHTML = '<p>Adjusted playlist duration</p><strong></strong>';
+            form.insertAdjacentElement('afterend', card);
+        }
+        card.querySelector('strong').textContent = formatted;
+        setTimeout(() => card.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 50);
+    }
+
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        calculate();
+    });
+
+
+    slider.addEventListener('input', function() {
+        if (document.querySelector('.result-card')) calculate();
     });
 </script>
 {% endblock %}
