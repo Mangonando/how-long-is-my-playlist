@@ -13,8 +13,11 @@ body {
 }
 
 .site-header {
+    position: fixed;
+    top: 0;
     width: 100%;
     background: var(--dark-green);
+    z-index: 100;
 }
 
 .navbar {
@@ -31,6 +34,13 @@ body {
     text-decoration: none;
     font-weight: 700;
     font-size: 18px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.logo-icon {
+    font-size: 32px;
 }
 
 .nav-actions {
@@ -55,6 +65,7 @@ body {
     margin-left: auto;
     margin-right: auto;
     padding: 48px 20px;
+    padding-top: 112px;
 }
 
 .hero {
@@ -117,7 +128,7 @@ body {
 
 label {
     color: var(--saffron);
-    font-size: 14px;
+    font-size: 16px;
 }
 
 input[type="number"] {
@@ -157,24 +168,10 @@ input[type="number"] {
     gap: 12px;
 }
 
-.crossfade-label {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
 .crossfade-value {
     color: var(--saffron);
-    font-weight: 700;
-    font-size: 16px;
+    font-size: 18px;
     font-variant-numeric: tabular-nums;
-}
-
-.crossfade-ticks {
-    display: flex;
-    justify-content: space-between;
-    color: var(--saffron);
-    font-size: 12px;
 }
 
 input[type="range"] {
@@ -215,7 +212,8 @@ input[type="range"]::-moz-range-thumb {
     display: inline-block;
     border: none;
     border-radius: 999px;
-    padding: 12px 20px;
+    padding: 16px 24px;
+    font-size: 18px;
     text-decoration: none;
     font-weight: 700;
     cursor: pointer;
@@ -247,6 +245,7 @@ input[type="range"]::-moz-range-thumb {
     border-radius: 18px;
     background: var(--ultra-violet);
     color: var(--saffron);
+    text-align: left;
 }
 
 .result-card p {
@@ -258,24 +257,92 @@ input[type="range"]::-moz-range-thumb {
     font-size: 48px;
 }
 
-@media (max-width: 700px) {
-    .navbar {
-        align-items: flex-start;
-        flex-direction: column;
-        gap: 16px;
-    }
+.hamburger {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+}
 
+.hamburger img {
+    width: 28px;
+    height: 28px;
+    filter: invert(83%) sepia(45%) saturate(500%) hue-rotate(340deg) brightness(103%);
+}
+
+.mobile-menu {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: auto;
+    background: var(--dark-green);
+    z-index: 200;
+    flex-direction: column;
+    gap: 24px;
+    padding: 20px;
+}
+
+.mobile-menu.open {
+    display: flex;
+}
+
+.menu-close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    align-self: flex-end;
+}
+
+.menu-close img {
+    width: 24px;
+    height: 24px;
+    filter: invert(83%) sepia(45%) saturate(500%) hue-rotate(340deg) brightness(103%);
+}
+
+.menu-cta-wrapper {
+    width: 100%;
+}
+
+.menu-cta {
+    display: block;
+    width: 100%;
+    text-align: center;
+    background: var(--saffron);
+    color: var(--dark-purple);
+}
+
+.menu-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 199;
+}
+
+.menu-overlay.open {
+    display: block;
+}
+
+@media (max-width: 1024px) {
     .nav-actions {
-        width: 100%;
-        justify-content: space-between;
+        display: none;
     }
 
+    .hamburger {
+        display: block;
+    }
+}
+
+@media (max-width: 700px) {
     .hero h1 {
         font-size: 40px;
-    }
-
-    .form-grid {
-        grid-template-columns: 1fr;
     }
 
     .calculator-card {
