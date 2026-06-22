@@ -72,12 +72,10 @@ body {
     margin-bottom: 40px;
 }
 
-.eyebrow {
-    color: var(--saffron);
-    text-transform: uppercase;
-    font-size: 14px;
-    font-weight: 700;
-    letter-spacing: 1px;
+.hero-content {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
 }
 
 .hero h1 {
@@ -101,11 +99,6 @@ body {
     padding: 32px;
     border-radius: 24px;
     background: var(--ultra-violet);
-}
-
-.calculator-card h2 {
-    margin-top: 0;
-    color: var(--saffron);
 }
 
 .calculator-form {
@@ -139,10 +132,13 @@ input[type="number"] {
     background: var(--dark-purple);
     color: var(--saffron);
     font-size: 16px;
+    -moz-appearance: textfield;
+    appearance: textfield;
 }
 
 input[type="number"]:focus {
-    outline: none;
+    outline: 2px solid var(--saffron);
+    outline-offset: 2px;
 }
 
 input[type="number"]::placeholder {
@@ -154,11 +150,6 @@ input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
     -webkit-appearance: none;
     margin: 0;
-}
-
-input[type="number"] {
-    -moz-appearance: textfield;
-    appearance: textfield;
 }
 
 .crossfade-group {
