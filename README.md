@@ -89,13 +89,10 @@ Configuration for [Ruff](https://docs.astral.sh/ruff/), the Python linter and fo
 ## Design choices
 
 **Why compute client-side instead of server-side?**
-The calculation is stateless and simple — no database, no user accounts, no sensitive data. Doing it in JavaScript means instant feedback without a round trip to the server. The trade-off is that logic lives in two places (Python and JS), but the functions are short enough that keeping them in sync is not a real burden.
-
-**Why Django for something this simple?**
-The goal was to learn Django, not to pick the most minimal tool. Using Django for a small project is a deliberate learning choice — it exposes you to the full request/response cycle, URL routing, template inheritance, static files, and settings management in a controlled environment.
+The calculation is stateless and simple, no database, no user accounts, no sensitive data. Doing it in JavaScript means instant feedback without a round trip to the server. The trade-off is that logic lives in two places (Python and JS), but the functions are short enough that keeping them in sync is not a real burden.
 
 **Why a range slider for crossfade?**
-Crossfade in Spotify goes from 1 to 12 seconds. A slider communicates that this is a bounded, continuous value and feels more natural than typing a number. It also allows for real-time result updates when a result is already displayed.
+From 1 to 12 seconds, a slider communicates that this is a bounded, continuous value and feels more natural than typing a number. It also allows for real-time result updates when a result is already displayed.
 
 ---
 
