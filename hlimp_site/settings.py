@@ -123,6 +123,12 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 
+# Spotify
+SPOTIFY_CLIENT_ID = os.environ["SPOTIFY_CLIENT_ID"]
+SPOTIFY_CLIENT_SECRET = os.environ["SPOTIFY_CLIENT_SECRET"]
+SPOTIFY_REDIRECT_URI = os.environ["SPOTIFY_REDIRECT_URI"]
+SPOTIFY_SCOPE = "playlist-read-private playlist-read-collaborative"
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 

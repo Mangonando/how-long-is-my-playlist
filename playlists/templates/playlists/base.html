@@ -17,7 +17,7 @@
 
             <div class="nav-actions">
                 <a class="nav-link" href="{% url 'calculator' %}">Manual Calculator</a>
-                <a class="button button-secondary" href="#">Login with Spotify</a>
+                <a class="button button-secondary" href="{% url 'spotify_login' %}">Login with Spotify</a>
             </div>
 
             <button class="hamburger" id="hamburger" aria-label="Open menu">
@@ -32,7 +32,7 @@
             <img src="{% static 'playlists/icons/close.png' %}" alt="Close">
         </button>
         <div class="menu-cta-wrapper">
-            <a class="button menu-cta" href="#">Login with Spotify</a>
+            <a class="button menu-cta" href="{% url 'spotify_login' %}">Login with Spotify</a>
         </div>
     </div>
 
