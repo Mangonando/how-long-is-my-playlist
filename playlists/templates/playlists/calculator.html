@@ -62,7 +62,7 @@
 
     updateSlider();
 
-    const allowedKeys = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'];
+    const allowedKeys = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab', 'Enter'];
     document.querySelectorAll('input[type="number"]').forEach(input => {
         input.addEventListener('keydown', function(e) {
             if (!allowedKeys.includes(e.key) && !/^[0-9]$/.test(e.key)) {
