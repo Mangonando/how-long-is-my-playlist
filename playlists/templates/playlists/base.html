@@ -17,7 +17,11 @@
 
             <div class="nav-actions">
                 <a class="nav-link" href="{% url 'calculator' %}">Manual Calculator</a>
-                <a class="button button-secondary" href="{% url 'spotify_login' %}">Login with Spotify</a>
+                {% if spotify_connected %}
+                    <a class="button button-secondary" href="{% url 'spotify_logout' %}">Logout</a>
+                {% else %}
+                    <a class="button button-secondary" href="{% url 'spotify_login' %}">Login with Spotify</a>
+                {% endif %}
             </div>
 
             <button class="hamburger" id="hamburger" aria-label="Open menu">
@@ -32,7 +36,11 @@
             <img src="{% static 'playlists/icons/close.png' %}" alt="Close">
         </button>
         <div class="menu-cta-wrapper">
-            <a class="button menu-cta" href="{% url 'spotify_login' %}">Login with Spotify</a>
+            {% if spotify_connected %}
+                <a class="button menu-cta" href="{% url 'spotify_logout' %}">Logout</a>
+            {% else %}
+                <a class="button menu-cta" href="{% url 'spotify_login' %}">Login with Spotify</a>
+            {% endif %}
         </div>
     </div>
 

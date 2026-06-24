@@ -1,0 +1,62 @@
+{% extends "playlists/base.html" %}
+{% load static %}
+
+{% block title %}Your Playlists - HLIMP{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div class="hero-content">
+        <h1>Your playlists</h1>
+        <p class="hero-text">Select a playlist to calculate its real duration after crossfade.</p>
+    </div>
+</section>
+
+<div class="playlists-toolbar">
+    <form method="get" action="{% url 'playlists' %}" class="search-form">
+        <input
+            type="search"
+            name="q"
+            value="{{ search_query }}"
+            placeholder="Search your playlist"
+            class="search-input"
+        >
+        <button type="submit" class="search-button" aria-label="Search">
+            <img src="{% static 'playlists/icons/search.png' %}" alt="Search">
+        </button>
+    </form>
+</div>
+
+{% if playlists %}
+    <ul class="playlists-grid">
+        {% for playlist in playlists %}
+            <li class="playlist-card">
+                {% if playlist.images %}
+                    <img class="playlist-cover" src="{{ playlist.images.0.url }}" alt="{{ playlist.name }}">
+                {% else %}
+                    <div class="playlist-cover playlist-cover--empty"></div>
+                {% endif %}
+                <div class="playlist-info">
+                    <p class="playlist-name">{{ playlist.name }}</p>
+                    {% if playlist.tracks %}
+                        <p class="playlist-tracks">{{ playlist.tracks.total }} tracks</p>
+                    {% endif %}
+                    <a href="#" class="button button-primary playlist-button">Calculate duration</a>
+                </div>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <div class="empty-state">
+        <p class="hero-text">
+            {% if search_query %}
+                No playlists found for "{{ search_query }}".
+            {% else %}
+                No playlists found.
+            {% endif %}
+        </p>
+        {% if search_query %}
+            <a href="{% url 'playlists' %}" class="button button-primary">Clear search</a>
+        {% endif %}
+    </div>
+{% endif %}
+{% endblock %}

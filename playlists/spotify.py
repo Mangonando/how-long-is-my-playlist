@@ -24,5 +24,37 @@ def get_token_from_code(code):
     return spotify_oauth.get_access_token(code, check_cache=False)
 
 
+def get_valid_token_info(request):
+    token_info = request.session.get("spotify_token_info")
+
+    if not token_info:
+        return None
+
+    spotify_oauth = get_spotify_oauth()
+
+    if spotify_oauth.is_token_expired(token_info):
+        token_info = spotify_oauth.refresh_access_token(token_info["refresh_token"])
+        request.session["spotify_token_info"] = token_info
+
+    return token_info
+
+
 def get_spotify_client(token_info):
     return spotipy.Spotify(auth=token_info["access_token"])
+
+
+def get_user_playlists(token_info):
+    spotify = get_spotify_client(token_info)
+
+    playlists = []
+    response = spotify.current_user_playlists(limit=50)
+
+    while response:
+        playlists.extend(response["items"])
+
+        if response["next"]:
+            response = spotify.next(response)
+        else:
+            response = None
+
+    return playlists
