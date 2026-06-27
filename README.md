@@ -4,24 +4,21 @@
 
 #### Description:
 
-**How Long Is My Playlist?** (HLIMP) is a web application that calculates the real duration of a music playlist after crossfade is applied.
-The project started as a command-line Python script and evolved into a full Django web application with a clean, responsive UI.
+**How Long Is My Playlist?** (HLIMP) calculates the real duration of a Spotify playlist after crossfade is applied. The project started as a command-line Python script and evolved into a full Django web application with Spotify OAuth integration and a clean, responsive UI.
 
 ---
 
 ## Why this project?
 
-When you enable crossfade in a music player like Spotify, each song fades into the next which means the actual listening time is shorter than the sum of all song durations. This tool lets you enter your playlist's total duration, the number of songs, and your crossfade setting to get the adjusted, real-world duration.
-I couldn't find a simple tool to calculate this, so I built one.
+When crossfade is enabled in Spotify, each song fades into the next — so the actual listening time is shorter than the sum of all song durations. I couldn't find a simple tool to calculate this, so I built one.
 
 ---
 
 ## Tech Stack
 
-- **Python 3.9**
-- **Django 4.2**
-- **HTML / CSS / JavaScript**
-- **python-dotenv** for environment variable management
+- Python 3.9 · Django 4.2 · Spotipy 2.26
+- HTML / CSS / JavaScript
+- python-dotenv
 
 ---
 
@@ -29,115 +26,85 @@ I couldn't find a simple tool to calculate this, so I built one.
 
 ```
 how-long-is-my-playlist/
-├── project.py                          # CLI version (core logic)
-├── hlimp_site/                         # Django project settings
+├── project.py              # Core logic + CLI entry point
+├── hlimp_site/             # Django project settings
 │   ├── settings.py
 │   ├── urls.py
 │   └── wsgi.py
-├── playlists/                          # Django app
+├── playlists/              # Django app
 │   ├── views.py
 │   ├── urls.py
-│   └── templates/
-│       └── playlists/
-│           ├── base.html              # Base layout template
-│           └── calculator.html        # Calculator page
+│   ├── spotify.py          # Spotify OAuth and API helpers
+│   └── templates/playlists/
+│       ├── base.html       # Base layout
+│       ├── calculator.html # Manual calculator page
+│       ├── playlists.html  # Spotify playlists grid
+│       └── playlist_detail.html
 ├── requirements.txt
-└── pyproject.toml                      # Ruff linter/formatter config
+└── pyproject.toml          # Ruff config
 ```
 
 ---
 
 ## Files explained
 
-### `project.py`
+**`project.py`** — Core business logic shared by the CLI and the web app: `calculate_total_seconds`, `calculate_crossfade_loss` (`(song_count - 1) * crossfade_seconds`), `calculate_adjusted_duration`, and `format_duration`. The `main()` function runs a terminal prompt independently of Django.
 
-This is the original command-line version of the calculator and contains the core business logic of the project. It defines four functions:
+**`playlists/spotify.py`** — All Spotify logic in one place: OAuth 2.0 Authorization Code Flow (auth URL, token exchange, token refresh), an authenticated Spotipy client, and paginated API calls to fetch playlists, metadata, and tracks.
 
-- `calculate_total_seconds(hours, minutes, seconds)` — converts the playlist duration to a single integer in seconds.
-- `calculate_crossfade_loss(song_count, crossfade_seconds)` — calculates how many seconds are lost to crossfade. The formula is `(song_count - 1) * crossfade_seconds`, since the last song has no fade-out into a next track.
-- `calculate_adjusted_duration(total_seconds, song_count, crossfade_seconds)` — subtracts the crossfade loss from the total, clamping at zero to avoid negative durations.
-- `format_duration(total_seconds)` — formats the result as `H:MM:SS` or `M:SS` depending on whether the duration exceeds an hour.
+**`playlists/views.py`** — All Django views: `calculator`, `spotify_login`, `spotify_callback`, `spotify_logout`, `playlists_view`, and `playlist_detail_view`. The detail view catches `SpotifyException` (e.g. 403 on restricted playlists) and renders a friendly error instead of crashing.
 
-The `main()` function collects user input via the terminal and prints the result. This script can be run independently without Django.
+**`base.html`** — Shared layout with a navbar whose links adapt based on login state and current page, plus a responsive mobile menu with hamburger button and overlay.
 
-### `playlists/views.py`
+**`calculator.html`** — Manual calculator with time inputs, song count, and a crossfade slider (0–12 s). Calculation runs in JavaScript, mirroring the `project.py` logic.
 
-The Django view for the calculator. It handles both GET and POST requests to the `/` route. On GET, it renders the calculator template. On POST, it redirects back to the same page, a standard POST/Redirect/GET pattern that prevents form resubmission on browser refresh. The actual calculation is done entirely client-side in JavaScript, so no data processing happens in the view for this version of the app.
+**`playlists.html`** — Responsive grid of the user's Spotify playlists with cover art, name, and track count. Includes server-side search filtering by name.
 
-### `playlists/templates/playlists/base.html`
+**`playlist_detail.html`** — Playlist cover, metadata, crossfade slider (recalculates on submit), original vs. real duration, and a full numbered track list. Shows a friendly error if the playlist is inaccessible.
 
-The base HTML template that all pages inherit from using Django's template inheritance system (`{% extends %}`). It defines the overall page structure: the `<head>` with CSS links and favicon, the navigation bar with the HLIMP logo and links, a mobile hamburger menu with overlay. The mobile menu is handled with a small inline JavaScript snippet that toggles CSS classes.
-
-### `playlists/templates/playlists/calculator.html`
-
-The main page of the application. It extends `base.html` and contains two sections:
-
-1. **Heading section** — a heading and short description of what the tool does.
-2. **Calculator card** — a form with inputs for hours, minutes, seconds, number of songs, and a range slider for the crossfade duration (1–12 seconds). The form submits via POST but the result is computed and displayed entirely in JavaScript without a page reload.
-
-The JavaScript in this template mirrors the logic from `project.py` exactly:
-- Input validation restricts number fields to digits only and enforces per-field limits (e.g., minutes and seconds cap at 59).
-- The crossfade slider updates a live display label as it moves.
-- On form submit, `calculateAdjustedDuration()` runs the same formula as the Python backend and injects a result card below the form.
-
-### `pyproject.toml`
-
-Configuration for [Ruff](https://docs.astral.sh/ruff/), the Python linter and formatter used in this project. It targets Python 3.9, enforces an 88-character line length, and enables rules for pycodestyle, pyflakes, isort, and Django-specific checks. A pre-commit hook runs Ruff automatically before every `git commit`.
+**`pyproject.toml`** — [Ruff](https://docs.astral.sh/ruff/) config: Python 3.9, 88-char line length, pycodestyle/pyflakes/isort/Django rules. Pre-commit hook runs on every `git commit`.
 
 ---
 
 ## Design choices
 
-**Why compute client-side instead of server-side?**
-The calculation is stateless and simple, no database, no user accounts, no sensitive data. Doing it in JavaScript means instant feedback without a round trip to the server. The trade-off is that logic lives in two places (Python and JS), but the functions are short enough that keeping them in sync is not a real burden.
+**Client-side calculation (manual calculator)** — The math is stateless with no sensitive data involved, so JavaScript gives instant feedback without a server round trip. The logic mirrors `project.py` exactly.
 
-**Why a range slider for crossfade?**
-From 1 to 12 seconds, a slider communicates that this is a bounded, continuous value and feels more natural than typing a number. It also allows for real-time result updates when a result is already displayed.
+**Crossfade as a slider** — A 0–12 s bounded range is more intuitive as a slider than a text input. On the detail page, submitting the form recalculates on the server with the new value.
+
+**Spotify integration alongside manual input** — The manual calculator requires knowing total duration, song count, and crossfade upfront. Spotify integration fetches all of that automatically. Both modes coexist for users without a Spotify account.
 
 ---
 
 ## How to run
 
-### Requirements
-
-- Python 3.9+
-- pip
-
-### Setup
+Requires Python 3.9+ and a Spotify app ([create one here](https://developer.spotify.com/dashboard)).
 
 ```bash
-# Clone the repository
 git clone <repo-url>
 cd how-long-is-my-playlist
 
-# Create and activate a virtual environment
 python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+source venv/bin/activate  # Windows: venv\Scripts\activate
 
-# Install dependencies
 pip install -r requirements.txt
+```
 
-# Create a .env file with a secret key
-echo "SECRET_KEY=your-secret-key-here" > .env
+Create a `.env` file:
 
-# Run the development server
+```
+SECRET_KEY=your-django-secret-key
+SPOTIFY_CLIENT_ID=your-client-id
+SPOTIFY_CLIENT_SECRET=your-client-secret
+SPOTIFY_REDIRECT_URI=http://127.0.0.1:8000/callback/
+```
+
+```bash
 python manage.py runserver
 ```
 
-Then open http://127.0.0.1:8000 in your browser.
+Open http://127.0.0.1:8000 in your browser.
 
-### Run the CLI version
+**CLI only:** `python project.py`
 
-```bash
-python project.py
-```
-
----
-
-## Optional: Linting
-
-```bash
-pip install ruff
-ruff check .
-ruff format .
-```
+**Linting:** `ruff check . && ruff format .`
