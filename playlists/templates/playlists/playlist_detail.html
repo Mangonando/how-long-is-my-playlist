@@ -1,0 +1,106 @@
+{% extends "playlists/base.html" %}
+{% load static %}
+
+{% block title %}{{ playlist.name }} - HLIMP{% endblock %}
+
+{% block content %}
+
+<a href="{% url 'playlists' %}" class="button button-ghost back-button">Back</a>
+
+{% if access_error %}
+<div class="empty-state">
+    <p class="hero-text">This playlist can't be accessed. It may be a Spotify-generated playlist or restricted by its owner.</p>
+</div>
+{% else %}
+
+<section class="playlist-hero">
+    {% if playlist.images %}
+        <img class="playlist-hero-cover" src="{{ playlist.images.0.url }}" alt="{{ playlist.name }}">
+    {% else %}
+        <div class="playlist-hero-cover playlist-cover--empty"></div>
+    {% endif %}
+    <div class="playlist-hero-info">
+        <h1>{{ playlist.name }}</h1>
+        {% if playlist.owner %}
+            <p class="hero-text">By {{ playlist.owner.display_name }}</p>
+        {% endif %}
+        <p class="hero-text">{{ song_count }} tracks &middot; {{ original_duration }}</p>
+    </div>
+</section>
+
+<div class="detail-layout">
+
+    <div class="calculator-card detail-card">
+        {% if crossfade_error %}
+            <p class="error-message">{{ crossfade_error }}</p>
+        {% endif %}
+
+        <form method="get" class="calculator-form">
+            <div class="form-group crossfade-group">
+                <label for="crossfade">Crossfade <span class="crossfade-value" id="crossfade-display">{% if crossfade_seconds == 0 %}Off{% else %}{{ crossfade_seconds }}s{% endif %}</span></label>
+                <input
+                    type="range"
+                    id="crossfade"
+                    name="crossfade"
+                    min="0"
+                    max="12"
+                    value="{{ crossfade_seconds }}"
+                >
+            </div>
+            <button type="submit" class="button button-primary">Calculate</button>
+        </form>
+
+        <div class="result-grid">
+            <div class="result-item">
+                <p>Original</p>
+                <strong>{{ original_duration }}</strong>
+            </div>
+<div class="result-item result-item--highlight">
+                <p>Real duration</p>
+                <strong>{{ adjusted_duration }}</strong>
+            </div>
+        </div>
+    </div>
+
+    <section class="tracks-section">
+        <h2 class="tracks-heading">Tracks</h2>
+        {% if tracks %}
+            <ol class="tracks-list">
+                {% for track in tracks %}
+                    <li class="track-item">
+                        <span class="track-number">{{ forloop.counter }}</span>
+                        <div class="track-info">
+                            <span class="track-name">{{ track.name }}</span>
+                            {% if track.artists %}
+                                <span class="track-artists">{{ track.artists|join:", " }}</span>
+                            {% endif %}
+                        </div>
+                    </li>
+                {% endfor %}
+            </ol>
+        {% else %}
+            <p class="hero-text">No valid tracks found in this playlist.</p>
+        {% endif %}
+    </section>
+
+</div>
+
+{% endif %}
+
+{% if not access_error %}
+<script>
+    const slider = document.getElementById('crossfade');
+    const display = document.getElementById('crossfade-display');
+
+    function updateSlider() {
+        const val = slider.value;
+        const progress = ((val - slider.min) / (slider.max - slider.min)) * 100;
+        slider.style.setProperty('--progress', progress + '%');
+        display.textContent = val === '0' ? 'Off' : val + 's';
+    }
+
+    slider.addEventListener('input', updateSlider);
+    updateSlider();
+</script>
+{% endif %}
+{% endblock %}

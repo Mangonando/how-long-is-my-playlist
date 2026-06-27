@@ -16,8 +16,12 @@
             <a class="logo" href="{% url 'calculator' %}"><span class="logo-icon">🔮</span> HLIMP</a>
 
             <div class="nav-actions">
-                <a class="nav-link" href="{% url 'calculator' %}">Manual Calculator</a>
-                {% if spotify_connected %}
+                {% if show_playlists_nav %}
+                    <a class="nav-link" href="{% url 'playlists' %}">My Spotify Playlists</a>
+                {% else %}
+                    <a class="nav-link" href="{% url 'calculator' %}">Manual Calculator</a>
+                {% endif %}
+                {% if spotify_logged_in %}
                     <a class="button button-secondary" href="{% url 'spotify_logout' %}">Logout</a>
                 {% else %}
                     <a class="button button-secondary" href="{% url 'spotify_login' %}">Login with Spotify</a>
@@ -35,8 +39,13 @@
         <button class="menu-close" id="menuClose" aria-label="Close menu">
             <img src="{% static 'playlists/icons/close.png' %}" alt="Close">
         </button>
+        {% if show_playlists_nav %}
+            <a class="nav-link" href="{% url 'playlists' %}">My Spotify Playlists</a>
+        {% else %}
+            <a class="nav-link" href="{% url 'calculator' %}">Manual Calculator</a>
+        {% endif %}
         <div class="menu-cta-wrapper">
-            {% if spotify_connected %}
+            {% if spotify_logged_in %}
                 <a class="button menu-cta" href="{% url 'spotify_logout' %}">Logout</a>
             {% else %}
                 <a class="button menu-cta" href="{% url 'spotify_login' %}">Login with Spotify</a>

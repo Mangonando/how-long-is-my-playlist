@@ -4,6 +4,8 @@
 {% block title %}Your Playlists - HLIMP{% endblock %}
 
 {% block content %}
+<a href="{% url 'calculator' %}" class="button button-ghost back-button">Back</a>
+
 <section class="hero">
     <div class="hero-content">
         <h1>Your playlists</h1>
@@ -40,7 +42,7 @@
                     {% if playlist.tracks %}
                         <p class="playlist-tracks">{{ playlist.tracks.total }} tracks</p>
                     {% endif %}
-                    <a href="#" class="button button-primary playlist-button">Calculate duration</a>
+                    <a href="{% url 'playlist_detail' playlist.id %}" class="button button-primary playlist-button">Calculate duration</a>
                 </div>
             </li>
         {% endfor %}

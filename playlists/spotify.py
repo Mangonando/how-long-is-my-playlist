@@ -43,9 +43,7 @@ def get_spotify_client(token_info):
     return spotipy.Spotify(auth=token_info["access_token"])
 
 
-def get_user_playlists(token_info):
-    spotify = get_spotify_client(token_info)
-
+def get_user_playlists(spotify):
     playlists = []
     response = spotify.current_user_playlists(limit=50)
 
@@ -58,3 +56,49 @@ def get_user_playlists(token_info):
             response = None
 
     return playlists
+
+
+def get_playlist_details(spotify, playlist_id):
+    return spotify.playlist(
+        playlist_id,
+        fields="id,name,images,owner(display_name),tracks(total)",
+    )
+
+
+def get_playlist_tracks(spotify, playlist_id):
+    tracks = []
+
+    response = spotify.playlist_items(
+        playlist_id,
+        limit=100,
+    )
+
+    while response:
+        for item in response["items"]:
+            if not item:
+                continue
+            track = item.get("item")
+
+            if not track:
+                continue
+
+            duration_ms = track.get("duration_ms")
+
+            if duration_ms is None:
+                continue
+
+            tracks.append(
+                {
+                    "id": track.get("id"),
+                    "name": track.get("name", "Unknown track"),
+                    "duration_ms": duration_ms,
+                    "artists": [artist["name"] for artist in track.get("artists", [])],
+                }
+            )
+
+        if response["next"]:
+            response = spotify.next(response)
+        else:
+            response = None
+
+    return tracks
