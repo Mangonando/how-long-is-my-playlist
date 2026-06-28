@@ -94,6 +94,7 @@ Create a `.env` file:
 
 ```
 SECRET_KEY=your-django-secret-key
+DEBUG=True
 SPOTIFY_CLIENT_ID=your-client-id
 SPOTIFY_CLIENT_SECRET=your-client-secret
 SPOTIFY_REDIRECT_URI=http://127.0.0.1:8000/callback/

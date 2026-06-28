@@ -18,7 +18,7 @@
             <div class="nav-actions">
                 {% if show_playlists_nav %}
                     <a class="nav-link" href="{% url 'playlists' %}">My Spotify Playlists</a>
-                {% else %}
+                {% elif spotify_logged_in %}
                     <a class="nav-link" href="{% url 'calculator' %}">Manual Calculator</a>
                 {% endif %}
                 {% if spotify_logged_in %}
@@ -41,7 +41,7 @@
         </button>
         {% if show_playlists_nav %}
             <a class="nav-link" href="{% url 'playlists' %}">My Spotify Playlists</a>
-        {% else %}
+        {% elif spotify_logged_in %}
             <a class="nav-link" href="{% url 'calculator' %}">Manual Calculator</a>
         {% endif %}
         <div class="menu-cta-wrapper">

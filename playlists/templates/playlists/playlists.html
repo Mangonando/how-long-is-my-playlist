@@ -28,7 +28,12 @@
     </form>
 </div>
 
-{% if playlists %}
+{% if access_error %}
+    <div class="empty-state">
+        <p class="hero-text">Could not load your playlists. Please try logging out and back in.</p>
+        <a href="{% url 'spotify_logout' %}" class="button button-primary">Logout</a>
+    </div>
+{% elif playlists %}
     <ul class="playlists-grid">
         {% for playlist in playlists %}
             <li class="playlist-card">

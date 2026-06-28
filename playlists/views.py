@@ -1,11 +1,7 @@
 from django.shortcuts import redirect, render
 from spotipy.exceptions import SpotifyException
 
-from project import (
-    calculate_adjusted_duration,
-    calculate_crossfade_loss,
-    format_duration,
-)
+from project import calculate_adjusted_duration, format_duration
 
 from .spotify import (
     get_auth_url,
@@ -26,7 +22,10 @@ def spotify_callback(request):
     code = request.GET.get("code")
     if not code:
         return redirect("calculator")
-    spotify_token_info = get_token_from_code(code)
+    try:
+        spotify_token_info = get_token_from_code(code)
+    except SpotifyException:
+        return redirect("calculator")
     request.session["spotify_token_info"] = spotify_token_info
     return redirect("playlists")
 
@@ -58,7 +57,20 @@ def playlists_view(request):
         return redirect("spotify_login")
 
     spotify = get_spotify_client(spotify_token_info)
-    playlists = get_user_playlists(spotify)
+
+    try:
+        playlists = get_user_playlists(spotify)
+    except SpotifyException:
+        return render(
+            request,
+            "playlists/playlists.html",
+            {
+                "playlists": [],
+                "search_query": "",
+                "access_error": True,
+                "spotify_logged_in": True,
+            },
+        )
 
     search_query = request.GET.get("q", "").strip().lower()
 
@@ -114,16 +126,11 @@ def playlist_detail_view(request, playlist_id):
         crossfade_seconds = 12
         crossfade_error = "Crossfade must be between 0 and 12"
 
-    if song_count == 0:
-        reduction_seconds = 0
-        adjusted_seconds = 0
-    else:
-        reduction_seconds = calculate_crossfade_loss(song_count, crossfade_seconds)
-        adjusted_seconds = calculate_adjusted_duration(
-            total_seconds,
-            song_count,
-            crossfade_seconds,
-        )
+    adjusted_seconds = (
+        0
+        if song_count == 0
+        else calculate_adjusted_duration(total_seconds, song_count, crossfade_seconds)
+    )
 
     return render(
         request,
@@ -135,7 +142,6 @@ def playlist_detail_view(request, playlist_id):
             "crossfade_seconds": crossfade_seconds,
             "crossfade_error": crossfade_error,
             "original_duration": format_duration(total_seconds),
-            "reduction_duration": format_duration(reduction_seconds),
             "adjusted_duration": format_duration(adjusted_seconds),
             "spotify_logged_in": True,
         },

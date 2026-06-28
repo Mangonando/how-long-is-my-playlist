@@ -10,7 +10,7 @@ def get_spotify_oauth():
         redirect_uri=settings.SPOTIFY_REDIRECT_URI,
         scope=settings.SPOTIFY_SCOPE,
         cache_path=None,
-        show_dialog=True,
+        show_dialog=False,
     )
 
 

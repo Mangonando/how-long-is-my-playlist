@@ -36,7 +36,7 @@
 
             <div class="form-group crossfade-group">
                 <label for="crossfade_seconds">Crossfade</label>
-                <input type="range" id="crossfade_seconds" name="crossfade_seconds" min="1" max="12" value="12">
+                <input type="range" id="crossfade_seconds" name="crossfade_seconds" min="0" max="12" value="12">
                 <span class="crossfade-value" id="crossfade_display">12s</span>
             </div>
         </div>
@@ -55,7 +55,7 @@
         const val = slider.value;
         const progress = ((val - slider.min) / (slider.max - slider.min)) * 100;
         slider.style.setProperty('--progress', progress + '%');
-        display.textContent = val + 's';
+        display.textContent = val === '0' ? 'Off' : val + 's';
     }
 
     slider.addEventListener('input', updateSlider);

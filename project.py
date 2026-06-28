@@ -1,9 +1,13 @@
 def main():
-    hours = int(input("Hours: "))
-    minutes = int(input("Minutes: "))
-    seconds = int(input("Seconds: "))
-    song_count = int(input("Number of songs: "))
-    crossfade_seconds = int(input("Crossfade in seconds: "))
+    try:
+        hours = int(input("Hours: "))
+        minutes = int(input("Minutes: "))
+        seconds = int(input("Seconds: "))
+        song_count = int(input("Number of songs: "))
+        crossfade_seconds = int(input("Crossfade in seconds: "))
+    except ValueError:
+        print("Error: all inputs must be whole numbers.")
+        return
 
     total_seconds = calculate_total_seconds(hours, minutes, seconds)
     adjusted_seconds = calculate_adjusted_duration(
