@@ -109,3 +109,23 @@ Open http://127.0.0.1:8000 in your browser.
 **CLI only:** `python project.py`
 
 **Linting:** `ruff check . && ruff format .`
+
+---
+
+## Deploying (Railway or Render)
+
+1. Push the repo to GitHub
+2. Create a new project on [Railway](https://railway.app) or [Render](https://render.com) and connect the repo
+3. Set the following environment variables in the platform dashboard:
+
+```
+SECRET_KEY=a-long-random-secret-key
+DEBUG=False
+ALLOWED_HOSTS=your-app-domain.railway.app
+SPOTIFY_CLIENT_ID=your-client-id
+SPOTIFY_CLIENT_SECRET=your-client-secret
+SPOTIFY_REDIRECT_URI=https://your-app-domain.railway.app/callback/
+```
+
+4. Add `https://your-app-domain.railway.app/callback/` as a Redirect URI in your [Spotify app settings](https://developer.spotify.com/dashboard)
+5. The `Procfile` handles migrations, static file collection, and starting the server automatically
