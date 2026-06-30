@@ -6,13 +6,20 @@
 
 **How Long Is My Playlist?** (HLIMP) calculates the real duration of a Spotify playlist after crossfade is applied. The project started as a command-line Python script and evolved into a full Django web application with Spotify OAuth integration and a clean, responsive UI.
 
----
+
+#### Webapp Sample:
+
+![Screenshot](screenshots/Screenshot%202026-06-30%20at%2014.18.44.png)
+![Screenshot](screenshots/Screenshot%202026-06-30%20at%2014.22.58.png)
+![Screenshot](screenshots/Screenshot%202026-06-30%20at%2014.25.47.png)
+![Screenshot](screenshots/Screenshot%202026-06-30%20at%2014.26.28.png)
+![Screenshot](screenshots/Screenshot%202026-06-30%20at%2014.27.02.png)
+![Screenshot](screenshots/Screenshot%202026-06-30%20at%2014.27.52.png)
 
 ## Why this project?
 
 When crossfade is enabled in Spotify, each song fades into the next — so the actual listening time is shorter than the sum of all song durations. I couldn't find a simple tool to calculate this, so I built one.
 
----
 
 ## Tech Stack
 
@@ -20,7 +27,6 @@ When crossfade is enabled in Spotify, each song fades into the next — so the a
 - HTML / CSS / JavaScript
 - python-dotenv
 
----
 
 ## Project Structure
 
@@ -44,7 +50,6 @@ how-long-is-my-playlist/
 └── pyproject.toml          # Ruff config
 ```
 
----
 
 ## Files explained
 
@@ -64,7 +69,6 @@ how-long-is-my-playlist/
 
 **`pyproject.toml`** — [Ruff](https://docs.astral.sh/ruff/) config: Python 3.9, 88-char line length, pycodestyle/pyflakes/isort/Django rules. Pre-commit hook runs on every `git commit`.
 
----
 
 ## Design choices
 
@@ -74,7 +78,6 @@ how-long-is-my-playlist/
 
 **Spotify integration alongside manual input** — The manual calculator requires knowing total duration, song count, and crossfade upfront. Spotify integration fetches all of that automatically. Both modes coexist for users without a Spotify account.
 
----
 
 ## How to run
 
@@ -110,7 +113,6 @@ Open http://127.0.0.1:8000 in your browser.
 
 **Linting:** `ruff check . && ruff format .`
 
----
 
 ## Deploying (Railway or Render)
 
