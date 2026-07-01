@@ -18,7 +18,7 @@
 
 ## Why this project?
 
-When crossfade is enabled in Spotify, each song fades into the next — so the actual listening time is shorter than the sum of all song durations. I couldn't find a simple tool to calculate this, so I built one.
+When crossfade is enabled in Spotify, each song fades into the next, the actual listening time is shorter than the sum of all song durations. I couldn't find a simple tool to calculate this, so I built one.
 
 
 ## Tech Stack
@@ -33,6 +33,8 @@ When crossfade is enabled in Spotify, each song fades into the next — so the a
 ```
 how-long-is-my-playlist/
 ├── project.py              # Core logic + CLI entry point
+├── test_project.py         # pytest tests for core functions
+├── manage.py               # Django management CLI
 ├── hlimp_site/             # Django project settings
 │   ├── settings.py
 │   ├── urls.py
@@ -51,32 +53,19 @@ how-long-is-my-playlist/
 ```
 
 
-## Files explained
-
-**`project.py`** — Core business logic shared by the CLI and the web app: `calculate_total_seconds`, `calculate_crossfade_loss` (`(song_count - 1) * crossfade_seconds`), `calculate_adjusted_duration`, and `format_duration`. The `main()` function runs a terminal prompt independently of Django.
-
-**`playlists/spotify.py`** — All Spotify logic in one place: OAuth 2.0 Authorization Code Flow (auth URL, token exchange, token refresh), an authenticated Spotipy client, and paginated API calls to fetch playlists, metadata, and tracks.
-
-**`playlists/views.py`** — All Django views: `calculator`, `spotify_login`, `spotify_callback`, `spotify_logout`, `playlists_view`, and `playlist_detail_view`. The detail view catches `SpotifyException` (e.g. 403 on restricted playlists) and renders a friendly error instead of crashing.
-
-**`base.html`** — Shared layout with a navbar whose links adapt based on login state and current page, plus a responsive mobile menu with hamburger button and overlay.
-
-**`calculator.html`** — Manual calculator with time inputs, song count, and a crossfade slider (0–12 s). Calculation runs in JavaScript, mirroring the `project.py` logic.
-
-**`playlists.html`** — Responsive grid of the user's Spotify playlists with cover art, name, and track count. Includes server-side search filtering by name.
-
-**`playlist_detail.html`** — Playlist cover, metadata, crossfade slider (recalculates on submit), original vs. real duration, and a full numbered track list. Shows a friendly error if the playlist is inaccessible.
-
-**`pyproject.toml`** — [Ruff](https://docs.astral.sh/ruff/) config: Python 3.9, 88-char line length, pycodestyle/pyflakes/isort/Django rules. Pre-commit hook runs on every `git commit`.
-
-
 ## Design choices
 
-**Client-side calculation (manual calculator)** — The math is stateless with no sensitive data involved, so JavaScript gives instant feedback without a server round trip. The logic mirrors `project.py` exactly.
+**Client-side calculation (manual calculator)**: The math is stateless with no sensitive data involved, I had to use JavaScript to get an instant feedback without a server round trip. The logic mirrors `project.py`.
 
-**Crossfade as a slider** — A 0–12 s bounded range is more intuitive as a slider than a text input. On the detail page, submitting the form recalculates on the server with the new value.
+**Crossfade as a slider**: Most of the information is added in an input. However, to improve the user experience I added a slider. it will be more intuitive and it will look better too. It is also self informative so users know what to do with it. 
 
-**Spotify integration alongside manual input** — The manual calculator requires knowing total duration, song count, and crossfade upfront. Spotify integration fetches all of that automatically. Both modes coexist for users without a Spotify account.
+**Manual Calculator**: I want to have a placeholdere where every user independently of where they have their playlist could check its length manually.
+
+**Spotify integration alongside manual input**: The most popular platform to date is Spotify. I want it to integrate it and fetch all the playlists automatically. This way it provides a better user experience without neglecting users who don`t have spotify. 
+
+**Spotify Login**: I chose it in order to fetch the playlists. Using other ways of login such as google, or apple would have been overengineering and useless as the user would not have got a better experience if they login that way.
+
+**Spotify Oauth**: I used Oauth to allow HLIMP to fetch the data automatically. It was better than parsing the playlist url.
 
 
 ## How to run
@@ -131,3 +120,7 @@ SPOTIFY_REDIRECT_URI=https://your-app-domain.railway.app/callback/
 
 4. Add `https://your-app-domain.railway.app/callback/` as a Redirect URI in your [Spotify app settings](https://developer.spotify.com/dashboard)
 5. The `Procfile` handles migrations, static file collection, and starting the server automatically
+
+
+## AI assistance
+This project was built with the assistance of Claude (Anthropic) as an AI pair programmer. Claude was used to discuss architectural approaches, explore design tradeoffs, review naming and code clarity, and speed up implementation. All design decisions, feature choices, and direction were made by the author. The AI served as an amplifier, not as a replacement for understanding.
